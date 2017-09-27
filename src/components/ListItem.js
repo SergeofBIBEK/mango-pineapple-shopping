@@ -3,15 +3,28 @@ import React, { Component } from 'react';
 class ListItem extends Component {
 
     render() {
-        
-        let { checked, product, quantity, handlers } = this.props;
-        
+
+        let { checked, product, quantity, handlers, index, store } = this.props;
+
         return (
             <div style={styles.container}>
-                <input style={styles.checkbox} type='checkbox' checked={checked} />
-                <p style={styles.product} >{product}</p>
-                <p style={styles.quantity} >{quantity}</p>
-                <button style={styles.editButton} >Edit</button>
+                <input style={styles.checkbox} 
+                    type='checkbox' 
+                    checked={checked} 
+                    onChange={ (e) => {handlers.toggleCheck(e.currentTarget.checked, store, index)} } />
+                <p 
+                    style={styles.product} >
+                    {product}
+                </p>
+                <p 
+                    style={styles.quantity} >
+                    {quantity}
+                </p>
+                <button 
+                    style={styles.editButton}
+                    onClick={ (e) => {handlers.edit(store, index)} } >
+                    Edit
+                </button>
             </div>
         )
     }

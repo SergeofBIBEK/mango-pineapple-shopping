@@ -12,21 +12,23 @@ class ListView extends Component {
             <div style={styles.listView}>
 
                 {/*EACH STORE IN THE LIST*/}
-                {list.map( (store) => {
+                {list.map( (store, storeIndex) => {
                     return (
                         <div key={store.key} style={styles.container}>
                             <h3 style={styles.storeHeading}>{store.key}</h3>
 
                             {/*EACH PRODUCT IN THE STORE*/}
-                            {store.products.map( (product) => {
+                            {store.products.map( (product, productIndex) => {
 
                                 if (product.editing) {
                                     return (
                                         <EditableItem 
                                             key={product.key} 
                                             checked={product.checked} 
-                                            product={product.key} 
-                                            quantity={product.quantity} 
+                                            product={product.editKey} 
+                                            quantity={product.editQuantity} 
+                                            store={storeIndex}
+                                            index={productIndex}
                                             handlers={handlers} />
                                     )
                                 }
@@ -36,7 +38,9 @@ class ListView extends Component {
                                         key={product.key} 
                                         checked={product.checked} 
                                         product={product.key} 
-                                        quantity={product.quantity} 
+                                        quantity={product.quantity}
+                                        store={storeIndex} 
+                                        index={productIndex}
                                         handlers={handlers} />
                                 )
                             } )}
@@ -55,21 +59,25 @@ const styles = {
     listView: {
         width: '100%',
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: 'baseline',
         alignItems: 'center',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        overflowY: 'scroll',
+        height: 'calc(100vh - 115px)'
     },
     container: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
-        width: '80%'
+        width: '80%',
+        flexShrink: '0'
     },
     storeHeading: {
         width: '100%',
         backgroundColor: 'lightblue',
-        textAlign: 'center'
+        textAlign: 'center',
+        flexShrink: '0'
     }
 }
 
