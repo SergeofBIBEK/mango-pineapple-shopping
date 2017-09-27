@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import ListItem from './ListItem.js';
 import EditableItem from './EditableItem.js';
+import AddItem from './AddItem.js';
 
 class ListView extends Component {
 
     render() {
 
-        let { list, handlers } = this.props;
+        let { list, handlers, addError, addStore, addQuantity, addProduct } = this.props;
 
         return (
             <div style={styles.listView}>
-
+                <AddItem handlers={handlers} store={addStore} product={addProduct} quantity={addQuantity} error={addError} />
                 {/*EACH STORE IN THE LIST*/}
                 {list.map( (store, storeIndex) => {
                     return (

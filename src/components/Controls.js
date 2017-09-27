@@ -3,10 +3,13 @@ import React, { Component } from 'react';
 class Controls extends Component {
 
     render() {
+        
+        let { handlers } = this.props;
+        
         return (
             <div style={styles.footerNav}>
-                <button>Bought</button>
-                <button>Save</button>
+                <button onClick={handlers.bought}>Bought</button>
+                <button onClick={handlers.save}>Save</button>
             </div>
         )
     }
