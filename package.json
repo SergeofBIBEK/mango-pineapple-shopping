@@ -2,7 +2,7 @@
     "name": "mango-pineapple-shopping",
     "version": "0.1.0",
     "private": true,
-    "homepage" : "http://myname.github.io/myapp",
+    "homepage" : "http://SergeofBIBEK.github.io/mango-pineapple-shopping/build/",
     "dependencies": {
         "react": "^15.6.1",
         "react-dom": "^15.6.1",
