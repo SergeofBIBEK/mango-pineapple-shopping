@@ -57,7 +57,9 @@ class App extends Component {
                 save: this.save.bind(this),
                 bought: this.bought.bind(this),
                 add: this.add.bind(this),
-                changeAddText: this.changeAddText.bind(this)
+                changeAddText: this.changeAddText.bind(this),
+                cancelAll: this.cancelAll.bind(this),
+                addError: this.addError.bind(this)
             },
             stores: [],
             products: [],
@@ -74,15 +76,17 @@ class App extends Component {
         let { list, handlers, stores, products } = this.state;
 
         return (
-            <div style={styles.appBody}>
+            <div>
                 <Header />
-                <ListView 
-                    list={list} 
-                    handlers={handlers} 
-                    addError={this.state.addError} 
-                    addStore={this.state.addStore} 
-                    addProduct={this.state.addProduct} 
-                    addQuantity={this.state.addQuantity} />
+                <div style={styles.appBody}>
+                    <ListView 
+                        list={list} 
+                        handlers={handlers} 
+                        addError={this.state.addError} 
+                        addStore={this.state.addStore} 
+                        addProduct={this.state.addProduct} 
+                        addQuantity={this.state.addQuantity} />
+                </div>
                 <Controls handlers={handlers} />
                 <Footer />
             </div>
@@ -183,27 +187,40 @@ class App extends Component {
     }
 
     cancelAll() {
-        //cancel all
+        this.setState( (state, props) => {
+
+            let list = state.list;
+
+            for (let i = 0; i < list.length; i++) {
+                for(let j = 0; j < list[i].products.length; j++) {
+                    list[i].products[j].editing = false;
+                    list[i].products[j].editKey = '';
+                    list[i].products[j].editQuantity = 0;
+                }
+            }
+
+            return {
+                list: list
+            }
+        } );
     }
 
-    add(store, product, quantity) {
+    add(newStore, newProduct, newQuantity) {
 
         this.setState( (state, props) => {
 
             let hasStore = false;
             let storeKey = '';
             let hasProduct = false;
-            let productKey = '';
 
-            state.list.forEach( (store) => {
-                if (store.key.toLowerCase() === store.toLowerCase()) {
+            state.list.forEach( (store, storeIndex) => {
+                if (store.key.toLowerCase() === newStore.toLowerCase()) {
                     hasStore = true;
-                    storeKey = store.key;
+                    storeKey = storeIndex;
 
-                    store.products.forEach( (product) => {
-                        if (product.key.toLowerCase() === product.toLowerCase()) {
+                    store.products.forEach( (product, productIndex) => {
+                        if (product.key.toLowerCase() === newProduct.toLowerCase()) {
                             hasProduct = true;
-                            productKey = product.key;
                         }
                     } );
                 }
@@ -214,8 +231,8 @@ class App extends Component {
 
             if (hasStore && !hasProduct) {
                 list[storeKey].products.push({
-                    key: product,
-                    quantity: quantity,
+                    key: newProduct,
+                    quantity: newQuantity,
                     editing: false,
                     checked: false,
                     editKey: '',
@@ -225,11 +242,11 @@ class App extends Component {
             }
             else if (!hasStore) {
                 list.push({
-                    key: store,
+                    key: newStore,
                     products: [
                         {
-                            key: product,
-                            quantity: quantity,
+                            key: newProduct,
+                            quantity: newQuantity,
                             editing: false,
                             checked: false,
                             editKey: '',
@@ -249,19 +266,23 @@ class App extends Component {
             }
         } );
     }
-    
+
+    addError() {
+        this.setState({addError: true});
+    }
+
     changeAddText(newValue, selector) {
         //
         this.setState( (state, props) => {
-            
+
             state[selector] = newValue;
-            
+
             return {
                 state: state
             }
-            
+
         } )
-        
+
     }
 }
 
@@ -269,10 +290,6 @@ const styles = {
     appBody: {
         paddingBottom: "75px",
         paddingTop: "40px",
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'baseline',
-        height: '-webkit-fill-available'
     }
 }
 

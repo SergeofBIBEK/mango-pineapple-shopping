@@ -1,27 +1,57 @@
 import React, { Component } from 'react';
 
 class AddItem extends Component {
-    
+
     render() {
 
         let { handlers, store, product, quantity, error } = this.props;
-        
+
         return (
             <div style={styles.container}>
-                <label style={styles.item}>Store: <input style={styles.text} type='text' value={store} onChange={(e) => {
+                <label 
+                    style={Object.assign( {}, styles.item, styles.label)}>
+                    Store: 
+                    <input 
+                        style={Object.assign({}, styles.text, error ? styles.error : {})} 
+                        type='text' 
+                        value={store} 
+                        onChange={(e) => {
                             handlers.changeAddText(e.currentTarget.value, 'addStore')
-                        }} /></label>
-                <label style={styles.item}>Product: <input style={styles.text} type='text' value={product} onChange={(e) => {
+                        }} />
+                </label>
+                <label 
+                    style={Object.assign( {}, styles.item, styles.label)}>
+                    Product: 
+                    <input style={Object.assign({}, styles.text, error ? styles.error : {})} 
+                        type='text' 
+                        value={product} 
+                        onChange={(e) => {
                             handlers.changeAddText(e.currentTarget.value, 'addProduct')
-                        }} /></label>
-                <label style={styles.item}>Quantity: <input style={styles.number} type='number' value={quantity} onChange={(e) => {
+                        }} />
+                </label>
+                <label 
+                    style={Object.assign( {}, styles.item, styles.label)}>
+                    Quantity: 
+                    <input 
+                        style={styles.number} 
+                        type='number' 
+                        value={quantity} 
+                        onChange={(e) => {
                             handlers.changeAddText(e.currentTarget.value, 'addQuantity')
-                        }} /></label>
+                        }} />
+                </label>
                 <button 
-                    style={Object.assign(styles.button, styles.item)}
+                    style={Object.assign({}, styles.button, styles.item)}
                     onClick={ (e) => {
-                        handlers.add(store, product, quantity);
-                    } }>Add</button>
+                        if (store !== '' && product !== ''){
+                            handlers.add(store, product, quantity);
+                        }
+                        else {
+                            handlers.addError();
+                        }
+                    } }>
+                    Add
+                </button>
             </div>
         )
     }
@@ -33,7 +63,8 @@ const styles = {
         margin: "10px 0px",
         alignItems: 'center',
         width: '90%',
-        justifyContent: 'space-evenly'
+        justifyContent: 'space-evenly',
+        height: '30px'
     },
     item: {
         margin: '5px'
@@ -46,6 +77,12 @@ const styles = {
     },
     button: {
         width: '40px'
+    },
+    error: {
+        border: '1px solid red'
+    },
+    label: {
+        fontSize: '8px'
     }
 }
 

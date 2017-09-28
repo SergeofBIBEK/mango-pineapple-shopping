@@ -10,46 +10,48 @@ class ListView extends Component {
         let { list, handlers, addError, addStore, addQuantity, addProduct } = this.props;
 
         return (
-            <div style={styles.listView}>
+            <div style={styles.listViewContainer}>
                 <AddItem handlers={handlers} store={addStore} product={addProduct} quantity={addQuantity} error={addError} />
-                {/*EACH STORE IN THE LIST*/}
-                {list.map( (store, storeIndex) => {
-                    return (
-                        <div key={store.key} style={styles.container}>
-                            <h3 style={styles.storeHeading}>{store.key}</h3>
+                <div style={styles.listView}>
+                    {/*EACH STORE IN THE LIST*/}
+                    {list.map( (store, storeIndex) => {
+                        return (
+                            <div key={store.key} style={styles.container}>
+                                <h3 style={styles.storeHeading}>{store.key}</h3>
 
-                            {/*EACH PRODUCT IN THE STORE*/}
-                            {store.products.map( (product, productIndex) => {
+                                {/*EACH PRODUCT IN THE STORE*/}
+                                {store.products.map( (product, productIndex) => {
 
-                                if (product.editing) {
+                                    if (product.editing) {
+                                        return (
+                                            <EditableItem 
+                                                key={product.key} 
+                                                checked={product.checked} 
+                                                product={product.editKey} 
+                                                quantity={product.editQuantity} 
+                                                store={storeIndex}
+                                                index={productIndex}
+                                                handlers={handlers} />
+                                        )
+                                    }
+
                                     return (
-                                        <EditableItem 
+                                        <ListItem 
                                             key={product.key} 
                                             checked={product.checked} 
-                                            product={product.editKey} 
-                                            quantity={product.editQuantity} 
-                                            store={storeIndex}
+                                            product={product.key} 
+                                            quantity={product.quantity}
+                                            store={storeIndex} 
                                             index={productIndex}
                                             handlers={handlers} />
                                     )
-                                }
+                                } )}
 
-                                return (
-                                    <ListItem 
-                                        key={product.key} 
-                                        checked={product.checked} 
-                                        product={product.key} 
-                                        quantity={product.quantity}
-                                        store={storeIndex} 
-                                        index={productIndex}
-                                        handlers={handlers} />
-                                )
-                            } )}
+                            </div>
+                        )
+                    } )}
 
-                        </div>
-                    )
-                } )}
-
+                </div>
             </div>
         )
     }
@@ -62,9 +64,14 @@ const styles = {
         display: 'flex',
         justifyContent: 'baseline',
         alignItems: 'center',
+        flexDirection: 'column'
+    },
+    listViewContainer: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'baseline',
+        alignItems: 'center',
         flexDirection: 'column',
-        overflowY: 'scroll',
-        height: 'calc(100vh - 115px)'
     },
     container: {
         display: 'flex',

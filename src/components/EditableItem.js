@@ -38,23 +38,23 @@ const styles = {
     container: {
         display: 'flex',
         alignItems: 'center',
-        width: '100%'
+        width: '100%',
+        justifyContent: 'space-around'
     },
     checkbox: {
-        flexGrow: '1',
         margin: '5px',
     },
     product: {
         flexGrow: '30',
         margin: '5px',
-        maxWidth: '350px'
+        maxWidth: '150px'
     },
     quantity: {
         flexGrow: '1',
         margin: '5px',
+        maxWidth: '50px'
     },
     editButton: {
-        flexGrow: '1',
         margin: '5px',
     }
 }
