@@ -7,17 +7,32 @@ class ListView extends Component {
 
     render() {
 
-        let { list, handlers, addError, addStore, addQuantity, addProduct } = this.props;
+        let { list, handlers, addError, addStore, addQuantity, addProduct, filterValue, storeNames } = this.props;
 
         return (
             <div style={styles.listViewContainer}>
                 <AddItem handlers={handlers} store={addStore} product={addProduct} quantity={addQuantity} error={addError} />
+                <div style={{height:' 40px', display:'flex', alignItems: 'center'}}>
+                    <select onChange={(e) => {handlers.selectChange(e.currentTarget.value)}} type='text' value={filterValue} style={{fontSize: '12px', margin: '10px'}} >
+                       <option value='none'>Store Filter</option>
+                        {!!list ? list.map( (store) => {
+                            return (
+                                <option key={store.key} value={store.key}>{store.key}</option>
+                            )
+                        } ) : null}
+                    </select>
+                    <label><input type='checkbox' checked={storeNames} onChange={handlers.changeStoreNames} /> Store Names</label>
+                </div>
                 <div style={styles.listView}>
                     {/*EACH STORE IN THE LIST*/}
-                    {list.map( (store, storeIndex) => {
+                    {!!list ? list.map( (store, storeIndex) => {
+                        if (filterValue !== 'none' && filterValue !== store.key)
+                            {
+                                return null;
+                            }
                         return (
                             <div key={store.key} style={styles.container}>
-                                <h3 style={styles.storeHeading}>{store.key}</h3>
+                                <h3 style={storeNames ? styles.storeHeading : {display: 'none'}}>{store.key}</h3>
 
                                 {/*EACH PRODUCT IN THE STORE*/}
                                 {store.products.map( (product, productIndex) => {
@@ -49,7 +64,7 @@ class ListView extends Component {
 
                             </div>
                         )
-                    } )}
+                    } ) : null}
 
                 </div>
             </div>

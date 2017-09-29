@@ -8,18 +8,7 @@ class AddItem extends Component {
 
         return (
             <div style={styles.container}>
-                <label 
-                    style={Object.assign( {}, styles.item, styles.label)}>
-                    Store: 
-                    <input 
-                        style={Object.assign({}, styles.text, error ? styles.error : {})} 
-                        type='text' 
-                        value={store} 
-                        onChange={(e) => {
-                            handlers.changeAddText(e.currentTarget.value, 'addStore')
-                        }} />
-                </label>
-                <label 
+               <label 
                     style={Object.assign( {}, styles.item, styles.label)}>
                     Product: 
                     <input style={Object.assign({}, styles.text, error ? styles.error : {})} 
@@ -27,6 +16,17 @@ class AddItem extends Component {
                         value={product} 
                         onChange={(e) => {
                             handlers.changeAddText(e.currentTarget.value, 'addProduct')
+                        }} />
+                </label>
+                <label 
+                    style={Object.assign( {}, styles.item, styles.label)}>
+                    Store: 
+                    <input 
+                        style={styles.text} 
+                        type='text' 
+                        value={store} 
+                        onChange={(e) => {
+                            handlers.changeAddText(e.currentTarget.value, 'addStore')
                         }} />
                 </label>
                 <label 

@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import * as firebase from 'firebase';
+
 import './App.css';
 
 import Header from './components/Header.js';
@@ -7,73 +9,100 @@ import Footer from './components/Footer.js';
 import ListView from './components/ListView.js';
 import Controls from './components/Controls.js';
 
+const config = {
+    apiKey: "AIzaSyCmXr6gS44SZ9zWkTeixX0C9gr6XKq343U",
+    authDomain: "shopping-a2fb2.firebaseapp.com",
+    databaseURL: "https://shopping-a2fb2.firebaseio.com",
+    projectId: "shopping-a2fb2",
+    storageBucket: "shopping-a2fb2.appspot.com",
+    messagingSenderId: "1028552578785"
+}
+
+firebase.initializeApp(config);
+
+let handlers = {};
+
 class App extends Component {
 
     constructor(props) {
         super(props);
 
-        this.state = {
-            list: [
-                {
-                    key: "Wal-Mart",
-                    products: [
-                        {
-                            key: "bread",
-                            quantity: 1,
-                            editing: false,
-                            checked: false,
-                            editKey: '',
-                            editQuantity: 0
-                        },
-                        {
-                            key: "cheese",
-                            quantity: 1,
-                            editing: false,
-                            checked: true,
-                            editKey: '',
-                            editQuantity: 0
-                        }
-                    ]
-                },
-                {
-                    key: "Publix",
-                    products: [
-                        {
-                            key: "milk",
-                            quantity: 1,
-                            editing: true,
-                            checked: false,
-                            editKey: '',
-                            editQuantity: 0
-                        }
-                    ]
-                }
-            ],
-            handlers: {
-                toggleCheck: this.toggleCheck.bind(this),
-                edit: this.edit.bind(this),
-                cancelEdit: this.cancelEdit.bind(this),
-                changeText: this.changeText.bind(this),
-                save: this.save.bind(this),
-                bought: this.bought.bind(this),
-                add: this.add.bind(this),
-                changeAddText: this.changeAddText.bind(this),
-                cancelAll: this.cancelAll.bind(this),
-                addError: this.addError.bind(this)
-            },
-            stores: [],
-            products: [],
-            addError: false,
-            addStore: '',
-            addProduct: '',
-            addQuantity: 0
-        }
+        handlers = {
+            toggleCheck: this.toggleCheck.bind(this),
+            edit: this.edit.bind(this),
+            cancelEdit: this.cancelEdit.bind(this),
+            changeText: this.changeText.bind(this),
+            save: this.save.bind(this),
+            bought: this.bought.bind(this),
+            add: this.add.bind(this),
+            changeAddText: this.changeAddText.bind(this),
+            cancelAll: this.cancelAll.bind(this),
+            addError: this.addError.bind(this),
+            selectChange: this.selectChange.bind(this),
+            changeStoreNames: this.changeStoreNames.bind(this)
+        }    
+
+        firebase.database().ref('/Test2/state').on('value', (snapshot) => {
+            this.state = snapshot.val();
+            this.forceUpdate();
+        });
+
+        /*if (!this.state) {
+            this.state = {
+                list: [
+                    {
+                        key: "Wall-Mart",
+                        products: [
+                            {
+                                key: "bread",
+                                quantity: 1,
+                                editing: false,
+                                checked: false,
+                                editKey: '',
+                                editQuantity: 0
+                            },
+                            {
+                                key: "cheese",
+                                quantity: 1,
+                                editing: false,
+                                checked: false,
+                                editKey: '',
+                                editQuantity: 0
+                            }
+                        ]
+                    },
+                    {
+                        key: "Publix",
+                        products: [
+                            {
+                                key: "milk",
+                                quantity: 1,
+                                editing: false,
+                                checked: false,
+                                editKey: '',
+                                editQuantity: 0
+                            }
+                        ]
+                    }
+                ],
+                stores: [],
+                products: [],
+                addError: false,
+                addStore: '',
+                addProduct: '',
+                addQuantity: 0,
+                filterValue: 'none',
+                storeNames: true
+            }
+        }*/
 
     }
 
     render() {
 
-        let { list, handlers, stores, products } = this.state;
+        if (!this.state) { return null }
+
+        let { list, stores, products } = this.state;
 
         return (
             <div>
@@ -85,7 +114,9 @@ class App extends Component {
                         addError={this.state.addError} 
                         addStore={this.state.addStore} 
                         addProduct={this.state.addProduct} 
-                        addQuantity={this.state.addQuantity} />
+                        addQuantity={this.state.addQuantity}
+                        filterValue={this.state.filterValue}
+                        storeNames={this.state.storeNames} />
                 </div>
                 <Controls handlers={handlers} />
                 <Footer />
@@ -94,63 +125,62 @@ class App extends Component {
     }
 
     toggleCheck(currentChecked, store, index) {
-        this.setState( (state, props) => {
 
-            state.list[store].products[index].checked = currentChecked;
+        let list = this.state.list;
 
-            return {
-                list: state.list
-            }
-        } );
+        list[store].products[index].checked = currentChecked;
+
+        firebase.database().ref('Test2/state').update({
+            list: list
+        });
     }
 
     edit(store, index) {
 
-        this.setState( (state, props) => {
+        let list = this.state.list;
 
-            state.list[store].products[index].editing = true;
-            state.list[store].products[index].editKey = state.list[store].products[index].key;
-            state.list[store].products[index].editQuantity = state.list[store].products[index].quantity;
+        list[store].products[index].editing = true;
+        list[store].products[index].editKey = list[store].products[index].key;
+        list[store].products[index].editQuantity = list[store].products[index].quantity;
 
-            return {
-                list: state.list
-            }
-        } );
+        firebase.database().ref('Test2/state').update({
+            list: list
+        });
 
     }
 
     cancelEdit(store, index) {
 
-        this.setState( (state, props) => {
+        let list = this.state.list;
 
-            state.list[store].products[index].editing = false;
-            state.list[store].products[index].editKey = '';
-            state.list[store].products[index].editQuantity = 0;
+        list[store].products[index].editing = false;
+        list[store].products[index].editKey = '';
+        list[store].products[index].editQuantity = 0;
 
-            return {
-                list: state.list
-            }
-        } );
+        firebase.database().ref('Test2/state').update({
+            list: list
+        });
 
     }
 
     changeText(newValue, store, index, selector) {
-        this.setState( (state, props) => {
-
-            state.list[store].products[index][selector] = newValue;
-
-            return {
-                list: state.list
-            }
-        } );
+        
+        let list = this.state.list;
+        
+        list[store].products[index][selector] = newValue;
+        
+        firebase.database().ref('Test2/state').update({
+            list: list
+        });
     }
 
     save() {
-        this.setState( (state, props) => {
-
-            let list = state.list;
-
-            list.forEach( (store) => {
+        
+        let list = this.state.list;
+        
+        if (!list) { list = [] }
+        
+        list.forEach( (store) => {
                 store.products.forEach( (product) => {
                     if (product.editing) {
                         product.key = product.editKey;
@@ -161,57 +191,57 @@ class App extends Component {
                     }
                 } )
             } );
-
-            return {
-                list: list
-            }
-        } );
+        
+        firebase.database().ref('Test2/state').update({
+            list: list
+        });
     }
 
     bought() {
-        this.setState( (state, props) => {
-
-            let list = state.list;
-
-            list = list.filter( (store) => {
+        
+        let list = this.state.list;
+        
+        if (!list) { list = [] }
+        
+        list = list.filter( (store) => {
                 store.products = store.products.filter( (product) => {return !product.checked} );
 
                 return store.products.length > 0;
-
             } );
-
-            return {
-                list: list
-            }
-        } );
+        
+        firebase.database().ref('Test2/state').update({
+            list: list
+        });
     }
 
     cancelAll() {
-        this.setState( (state, props) => {
-
-            let list = state.list;
-
-            for (let i = 0; i < list.length; i++) {
+        
+        let list = this.state.list;
+        
+        if (!list) { list = [] }
+        
+        for (let i = 0; i < list.length; i++) {
                 for(let j = 0; j < list[i].products.length; j++) {
                     list[i].products[j].editing = false;
                     list[i].products[j].editKey = '';
                     list[i].products[j].editQuantity = 0;
                 }
             }
-
-            return {
-                list: list
-            }
-        } );
+        
+        firebase.database().ref('Test2/state').update({
+            list: list
+        });
     }
 
     add(newStore, newProduct, newQuantity) {
 
-        this.setState( (state, props) => {
-
-            let hasStore = false;
+        let state = this.state;
+        
+        let hasStore = false;
             let storeKey = '';
             let hasProduct = false;
+        
+            if (!state.list) {state.list = []}
 
             state.list.forEach( (store, storeIndex) => {
                 if (store.key.toLowerCase() === newStore.toLowerCase()) {
@@ -260,29 +290,43 @@ class App extends Component {
                 addError = true;
             }
 
-            return {
-                list: list,
-                addError: addError
-            }
-        } );
+        firebase.database().ref('Test2/state').update({
+            list: list,
+            addError: addError
+        });
     }
 
     addError() {
-        this.setState({addError: true});
+        
+        firebase.database().ref('Test2/state').update({
+            addError: true
+        });
     }
 
     changeAddText(newValue, selector) {
-        //
-        this.setState( (state, props) => {
+        
+        let state = this.state
+        
+        state[selector] = newValue;
+        
+        firebase.database().ref('Test2').update({
+            state: state
+        });
 
-            state[selector] = newValue;
+    }
 
-            return {
-                state: state
-            }
+    selectChange(value) {
+        
+        firebase.database().ref('Test2/state').update({
+            filterValue: value
+        });
+    }
 
-        } )
-
+    changeStoreNames() {
+        
+        firebase.database().ref('Test2/state').update({
+            storeNames: !this.state.storeNames
+        });
     }
 }
 
