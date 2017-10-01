@@ -3,33 +3,39 @@ import ListItem from './ListItem.js';
 import EditableItem from './EditableItem.js';
 import AddItem from './AddItem.js';
 
+import CheckboxBlankOutlineIcon from 'mdi-react/CheckboxBlankOutlineIcon';
+import CheckboxMarkedIcon from 'mdi-react/CheckboxMarkedIcon';
+
 class ListView extends Component {
 
     render() {
 
-        let { list, handlers, addError, addStore, addQuantity, addProduct, filterValue, storeNames } = this.props;
+        let { list, handlers, addError, addStore, addQuantity, addProduct, filterValue, storeNames, stores, products } = this.props;
 
         return (
             <div style={styles.listViewContainer}>
-                <AddItem handlers={handlers} store={addStore} product={addProduct} quantity={addQuantity} error={addError} />
+                <AddItem handlers={handlers} store={addStore} product={addProduct} quantity={addQuantity} error={addError} stores={stores} products={products} />
                 <div style={{height:' 40px', display:'flex', alignItems: 'center'}}>
-                    <select onChange={(e) => {handlers.selectChange(e.currentTarget.value)}} type='text' value={filterValue} style={{fontSize: '12px', margin: '10px'}} >
-                       <option value='none'>Store Filter</option>
+                    <select onChange={(e) => {handlers.selectChange(e.currentTarget.value)}} type='text' value={filterValue} style={{fontSize: '12px', margin: '10px', border: 'none', backgroundColor: '#FF6D00', color: '#64b5f6', WebkitAppearance: 'none', padding: '4px'}} >
+                        <option value='none'>Store Filter </option>
                         {!!list ? list.map( (store) => {
                             return (
                                 <option key={store.key} value={store.key}>{store.key}</option>
                             )
                         } ) : null}
                     </select>
-                    <label><input type='checkbox' checked={storeNames} onChange={handlers.changeStoreNames} /> Store Names</label>
+                    <div onClick={ handlers.changeStoreNames } style={{display:'flex', alignItems: 'center'}}>
+                        {storeNames ? <CheckboxMarkedIcon /> : <CheckboxBlankOutlineIcon /> }
+                        Store Names
+                    </div>
                 </div>
                 <div style={styles.listView}>
                     {/*EACH STORE IN THE LIST*/}
                     {!!list ? list.map( (store, storeIndex) => {
                         if (filterValue !== 'none' && filterValue !== store.key)
-                            {
-                                return null;
-                            }
+                        {
+                            return null;
+                        }
                         return (
                             <div key={store.key} style={styles.container}>
                                 <h3 style={storeNames ? styles.storeHeading : {display: 'none'}}>{store.key}</h3>
@@ -93,12 +99,13 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
-        width: '80%',
+        width: '90%',
         flexShrink: '0'
     },
     storeHeading: {
         width: '100%',
-        backgroundColor: 'lightblue',
+        backgroundColor: '#FF9100',
+        color: '#0D47A1',
         textAlign: 'center',
         flexShrink: '0'
     }

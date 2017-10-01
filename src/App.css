@@ -7,3 +7,12 @@
 input {
     font-size: 16px;
 }
+
+.mdi-icon {
+    fill: #FF6D00;
+}
+
+body {
+    background-color: #2196F3;
+    color: #FF3D00;
+}

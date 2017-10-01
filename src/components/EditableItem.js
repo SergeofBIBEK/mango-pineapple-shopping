@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import CancelIcon from 'mdi-react/CancelIcon';
+import CheckboxBlankOutlineIcon from 'mdi-react/CheckboxBlankOutlineIcon';
+import CheckboxMarkedIcon from 'mdi-react/CheckboxMarkedIcon';
 
 class EditableItem extends Component {
 
@@ -8,11 +11,9 @@ class EditableItem extends Component {
 
         return (
             <div style={styles.container}>
-                <input 
-                    style={styles.checkbox} 
-                    type='checkbox' 
-                    checked={checked}
-                    onChange={ (e) => {handlers.toggleCheck(e.currentTarget.checked, store, index)} } />
+                <div onClick={ (e) => {handlers.toggleCheck(!checked, store, index)} } style={styles.checkbox}>
+                    {checked ? <CheckboxMarkedIcon /> : <CheckboxBlankOutlineIcon /> }
+                </div>
                 <input 
                     style={styles.product} 
                     type='text' 
@@ -23,11 +24,11 @@ class EditableItem extends Component {
                     type='number' 
                     onChange={ (e) => {handlers.changeText(e.currentTarget.value, store, index, "editQuantity")} }value={quantity}
                      />
-                <button 
+                <div 
                     style={styles.editButton}
                     onClick={ (e) => {handlers.cancelEdit(store, index)} } >
-                    Cancel
-                </button>
+                    <CancelIcon />
+                </div>
             </div>
         )
     }
@@ -47,15 +48,28 @@ const styles = {
     product: {
         flexGrow: '30',
         margin: '5px',
-        maxWidth: '150px'
+        maxWidth: '150px',
+        backgroundColor: '#ff6d00',
+        border: 'none',
+        borderRadius: '0px',
+        color: '#64b5f6',
+        textAlign: 'center',
     },
     quantity: {
         flexGrow: '1',
         margin: '5px',
-        maxWidth: '50px'
+        maxWidth: '50px',
+        backgroundColor: '#ff6d00',
+        border: 'none',
+        borderRadius: '0px',
+        color: '#64b5f6',
+        textAlign: 'center',
     },
     editButton: {
-        margin: '5px',
+        padding: '2px 5px',
+        textAlign: 'center',
+        borderRadius: '10px',
+        backgroundColor: '#2979ff'
     }
 }
 

@@ -17,12 +17,13 @@ const styles = {
         position: 'fixed',
         top: '0px',
         width: '100%',
-        backgroundColor: '#000',
-        color: '#FFF',
+        backgroundColor: '#1976D2',
+        color: '#FF9800',
         height: '40px',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        zIndex: 2
     }
 }
 

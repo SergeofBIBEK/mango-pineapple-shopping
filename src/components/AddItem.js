@@ -1,26 +1,38 @@
 import React, { Component } from 'react';
+import NotePlusIcon from 'mdi-react/NotePlusIcon';
 
 class AddItem extends Component {
 
     render() {
 
-        let { handlers, store, product, quantity, error } = this.props;
+        let { handlers, store, product, quantity, error, products, stores } = this.props;
 
         return (
             <div style={styles.container}>
-               <label 
+                <label 
                     style={Object.assign( {}, styles.item, styles.label)}>
-                    Product: 
-                    <input style={Object.assign({}, styles.text, error ? styles.error : {})} 
+                    Product: <br />
+                    <input className="addInput" style={Object.assign({}, styles.text, error ? styles.error : {})} 
                         type='text' 
                         value={product} 
                         onChange={(e) => {
                             handlers.changeAddText(e.currentTarget.value, 'addProduct')
                         }} />
+
+                    <div className="dropdown" style={styles.dropdown} >
+                        {products.filter( (thing) => {
+                            return thing.toLowerCase().includes(product.toLowerCase());
+                        }).map( (thing) => {
+                            return <div onClick={(e) => {
+                                    handlers.changeAddText(thing, 'addProduct')
+                                }} key={thing}>{thing}</div>
+                        })}
+                    </div>
+
                 </label>
                 <label 
                     style={Object.assign( {}, styles.item, styles.label)}>
-                    Store: 
+                    Store: <br />
                     <input 
                         style={styles.text} 
                         type='text' 
@@ -28,10 +40,20 @@ class AddItem extends Component {
                         onChange={(e) => {
                             handlers.changeAddText(e.currentTarget.value, 'addStore')
                         }} />
+
+                    <div className="dropdown" style={styles.dropdown} >
+                        {stores.filter( (thing) => {
+                            return thing.toLowerCase().includes(store.toLowerCase());
+                        }).map( (thing) => {
+                            return <div onClick={(e) => {
+                                    handlers.changeAddText(thing, 'addStore')
+                                }} key={thing}>{thing}</div>
+                        })}
+                    </div>
                 </label>
                 <label 
                     style={Object.assign( {}, styles.item, styles.label)}>
-                    Quantity: 
+                    Quantity: <br />
                     <input 
                         style={styles.number} 
                         type='number' 
@@ -40,18 +62,18 @@ class AddItem extends Component {
                             handlers.changeAddText(e.currentTarget.value, 'addQuantity')
                         }} />
                 </label>
-                <button 
-                    style={Object.assign({}, styles.button, styles.item)}
+                <div 
+                    style={Object.assign({}, styles.item, styles.button)}
                     onClick={ (e) => {
-                        if (store !== '' && product !== ''){
+                        if (product !== ''){
                             handlers.add(store, product, quantity);
                         }
                         else {
                             handlers.addError();
                         }
                     } }>
-                    Add
-                </button>
+                    <NotePlusIcon />
+                </div>
             </div>
         )
     }
@@ -62,27 +84,55 @@ const styles = {
         display: "flex",
         margin: "10px 0px",
         alignItems: 'center',
-        width: '90%',
-        justifyContent: 'space-evenly',
-        height: '30px'
+        width: '100%',
+        justifyContent: 'center',
+        height: '90px',
+        padding: '0px 10px'
     },
     item: {
         margin: '5px'
     },
     text: {
-        width: '90px'
+        width: '120px',
+        backgroundColor: '#ff6d00',
+        border: 'none',
+        borderRadius: '0px',
+        color: '#64b5f6',
+        textAlign: 'center',
     },
     number: {
-        width: '40px'
+        width: '40px',
+        backgroundColor: '#ff6d00',
+        border: 'none',
+        borderRadius: '0px',
+        color: '#64b5f6',
+        textAlign: 'center',
     },
     button: {
-        width: '40px'
+        padding: '5px 10px',
+        borderRadius: '10px',
+        backgroundColor: '#2979FF',
+        margin: '15px 0px 0px 0px'
     },
     error: {
         border: '1px solid red'
     },
     label: {
-        fontSize: '8px'
+        fontSize: '12px',
+        position: 'relative'
+    },
+
+    dropdown: {
+        position: 'relative',
+        left: 0,
+        width: '120px',
+        fontSize: '13px',
+        backgroundColor: '#FFB74D',
+        padding: '0px 5px',
+        maxHeight: '50px',
+        overflowY: 'scroll',
+        color: '#0D47A1',
+        textAlign: 'center'
     }
 }
 

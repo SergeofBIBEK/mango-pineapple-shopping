@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import PencilIcon from 'mdi-react/PencilIcon';
+import CheckboxBlankOutlineIcon from 'mdi-react/CheckboxBlankOutlineIcon';
+import CheckboxMarkedIcon from 'mdi-react/CheckboxMarkedIcon';
 
 class ListItem extends Component {
 
@@ -8,10 +11,9 @@ class ListItem extends Component {
 
         return (
             <div style={styles.container}>
-                <input style={styles.checkbox} 
-                    type='checkbox' 
-                    checked={checked} 
-                    onChange={ (e) => {handlers.toggleCheck(e.currentTarget.checked, store, index)} } />
+                <div onClick={ (e) => {handlers.toggleCheck(!checked, store, index)} } style={styles.checkbox}>
+                    {checked ? <CheckboxMarkedIcon /> : <CheckboxBlankOutlineIcon /> }
+                </div>
                 <p 
                     style={styles.product} >
                     {product}
@@ -20,11 +22,11 @@ class ListItem extends Component {
                     style={styles.quantity} >
                     {quantity}
                 </p>
-                <button 
+                <div 
                     style={styles.editButton}
                     onClick={ (e) => {handlers.edit(store, index)} } >
-                    Edit
-                </button>
+                    <PencilIcon />
+                </div>
             </div>
         )
     }
@@ -52,7 +54,9 @@ const styles = {
     },
     editButton: {
         flexGrow: '1',
-        margin: '5px',
+        textAlign: 'center',
+        borderRadius: '10px',
+        backgroundColor: '#2979ff'
     }
 }
 
