@@ -386,13 +386,13 @@ const styles = {
     signOut: {
         position: "fixed",
         zIndex: "5",
-        top: "5px",
+        bottom: "3px",
         right: "5px",
         border: "none",
         outline: "none",
         backgroundColor: "#FF6D00",
-        height: "30px",
-        padding: "0 10px",
+        height: "19px",
+        padding: "0 5px",
         color: "#2979ff",
         fontWeight: "900"
     }
