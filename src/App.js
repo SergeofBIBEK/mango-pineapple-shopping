@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import * as firebase from 'firebase';
+import firebase from './FirebaseConfig.js';
 
 import './App.css';
 
@@ -9,23 +9,44 @@ import Footer from './components/Footer.js';
 import ListView from './components/ListView.js';
 import Controls from './components/Controls.js';
 
-const config = {
-    apiKey: "AIzaSyCmXr6gS44SZ9zWkTeixX0C9gr6XKq343U",
-    authDomain: "shopping-a2fb2.firebaseapp.com",
-    databaseURL: "https://shopping-a2fb2.firebaseio.com",
-    projectId: "shopping-a2fb2",
-    storageBucket: "shopping-a2fb2.appspot.com",
-    messagingSenderId: "1028552578785"
-}
-
-firebase.initializeApp(config);
-
 let handlers = {};
 
 class App extends Component {
 
     constructor(props) {
         super(props);
+
+        let defaultState = {
+            addError: true,
+            addProduct: "",
+            addQuantity: 1,
+            addStore: "",
+            filterValue: "none",
+            list: [
+                {
+                    key: "Wal-Mart",
+                    products: [
+                        {
+                            checked: true,
+                            editKey: "",
+                            editQuantity: 0,
+                            editing: false,
+                            key: "Milk",
+                            quantity: "1",
+                        }
+                    ]
+                }
+            ],
+            pFocus: false,
+            pListFocus: false,
+            products: [
+                "Milk"
+            ],
+            storeNames: true,
+            stores: [
+                "Wal-Mart"
+            ]
+        }
 
         handlers = {
             toggleCheck: this.toggleCheck.bind(this),
@@ -43,71 +64,36 @@ class App extends Component {
             checkAll: this.checkAll.bind(this)
         }    
 
-        firebase.database().ref('/Test2/state').on('value', (snapshot) => {
-            this.state = snapshot.val();
-            this.forceUpdate();
-        });
+        firebase.database().ref(props.uid + '/state').on('value', (snapshot) => {
 
-        /*if (!this.state) {
-            this.state = {
-                list: [
-                    {
-                        key: "Wall-Mart",
-                        products: [
-                            {
-                                key: "bread",
-                                quantity: 1,
-                                editing: false,
-                                checked: false,
-                                editKey: '',
-                                editQuantity: 0
-                            },
-                            {
-                                key: "cheese",
-                                quantity: 1,
-                                editing: false,
-                                checked: false,
-                                editKey: '',
-                                editQuantity: 0
-                            }
-                        ]
-                    },
-                    {
-                        key: "Publix",
-                        products: [
-                            {
-                                key: "milk",
-                                quantity: 1,
-                                editing: false,
-                                checked: false,
-                                editKey: '',
-                                editQuantity: 0
-                            }
-                        ]
-                    }
-                ],
-                stores: [],
-                products: [],
-                addError: false,
-                addStore: '',
-                addProduct: '',
-                addQuantity: 0,
-                filterValue: 'none',
-                storeNames: true
+            if (!snapshot.val()) {
+                firebase.database().ref(props.uid).update({state: defaultState});
+                this.state = defaultState;
+                this.forceUpdate();
+            } else {
+                this.state = snapshot.val();
+                this.forceUpdate();
             }
-        }*/
+        });
 
     }
 
     render() {
 
-        if (!this.state) { return null }
+        if (!this.state) { return null; }
 
         let { list, stores, products } = this.state;
+
+        //let { displayName, email, emailVerified, photoURL, uid, providerData } = this.props;
 
         return (
             <div>
                 <Header />
+                <button 
+                    style={styles.signOut}
+                    onClick={ (e) => {firebase.database().ref(this.props.uid || "/").off(); firebase.auth().signOut();} }>
+                    Sign Out
+                </button>
                 <div style={styles.appBody}>
                     <ListView 
                         list={list} 
@@ -133,7 +119,7 @@ class App extends Component {
 
         list[store].products[index].checked = currentChecked;
 
-        firebase.database().ref('Test2/state').update({
+        firebase.database().ref(this.props.uid + '/state').update({
             list: list
         });
     }
@@ -146,7 +132,7 @@ class App extends Component {
         list[store].products[index].editKey = list[store].products[index].key;
         list[store].products[index].editQuantity = list[store].products[index].quantity;
 
-        firebase.database().ref('Test2/state').update({
+        firebase.database().ref(this.props.uid + '/state').update({
             list: list
         });
 
@@ -160,7 +146,7 @@ class App extends Component {
         list[store].products[index].editKey = '';
         list[store].products[index].editQuantity = 0;
 
-        firebase.database().ref('Test2/state').update({
+        firebase.database().ref(this.props.uid + '/state').update({
             list: list
         });
 
@@ -172,7 +158,7 @@ class App extends Component {
 
         list[store].products[index][selector] = newValue;
 
-        firebase.database().ref('Test2/state').update({
+        firebase.database().ref(this.props.uid + '/state').update({
             list: list
         });
     }
@@ -195,7 +181,7 @@ class App extends Component {
             } )
         } );
 
-        firebase.database().ref('Test2/state').update({
+        firebase.database().ref(this.props.uid + '/state').update({
             list: list
         });
     }
@@ -212,28 +198,28 @@ class App extends Component {
             return store.products.length > 0;
         } );
 
-        firebase.database().ref('Test2/state').update({
+        firebase.database().ref(this.props.uid + '/state').update({
             list: list
         });
     }
 
     checkAll() {
-        
+
         let list = this.state.list;
 
         if (!list) { list = [] }
-        
+
         for (let i = 0; i < list.length; i++) {
             for(let j = 0; j < list[i].products.length; j++) {
                 list[i].products[j].checked = true;
             }
         }
-        
-        firebase.database().ref('Test2/state').update({
+
+        firebase.database().ref(this.props.uid + '/state').update({
             list: list
         });
     }
-    
+
     cancelAll() {
 
         let list = this.state.list;
@@ -248,7 +234,7 @@ class App extends Component {
             }
         }
 
-        firebase.database().ref('Test2/state').update({
+        firebase.database().ref(this.props.uid + '/state').update({
             list: list
         });
     }
@@ -274,7 +260,7 @@ class App extends Component {
             productArray.push(newProduct);
             productArray.sort();
         }
-        
+
         exists = false;
 
         for ( let i = 0; i < storeArray.length; i++)
@@ -290,7 +276,7 @@ class App extends Component {
             storeArray.push(newStore);
             storeArray.sort();
         }
-        
+
         if (newStore === '') { newStore = 'None'}
 
         let hasStore = false;
@@ -346,7 +332,7 @@ class App extends Component {
             addError = true;
         }
 
-        firebase.database().ref('Test2/state').update({
+        firebase.database().ref(this.props.uid + '/state').update({
             list: list,
             addError: addError,
             addProduct: '',
@@ -359,7 +345,7 @@ class App extends Component {
 
     addError() {
 
-        firebase.database().ref('Test2/state').update({
+        firebase.database().ref(this.props.uid + '/state').update({
             addError: true
         });
     }
@@ -370,7 +356,7 @@ class App extends Component {
 
         state[selector] = newValue;
 
-        firebase.database().ref('Test2').update({
+        firebase.database().ref(this.props.uid).update({
             state: state
         });
 
@@ -378,14 +364,14 @@ class App extends Component {
 
     selectChange(value) {
 
-        firebase.database().ref('Test2/state').update({
+        firebase.database().ref(this.props.uid + '/state').update({
             filterValue: value
         });
     }
 
     changeStoreNames() {
 
-        firebase.database().ref('Test2/state').update({
+        firebase.database().ref(this.props.uid + '/state').update({
             storeNames: !this.state.storeNames
         });
     }
@@ -396,6 +382,19 @@ const styles = {
     appBody: {
         paddingBottom: "75px",
         paddingTop: "40px",
+    },
+    signOut: {
+        position: "fixed",
+        zIndex: "5",
+        top: "5px",
+        right: "5px",
+        border: "none",
+        outline: "none",
+        backgroundColor: "#FF6D00",
+        height: "30px",
+        padding: "0 10px",
+        color: "#2979ff",
+        fontWeight: "900"
     }
 }
 
